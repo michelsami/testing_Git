@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <title>Projectile motion</title>
+    </head>
+<body>
+
+    <p>
+    <input type="range" min="0" max="90" id="angle">
+    <label for="angle">Angle</label>
+    </p>
+    
+    <p>
+    <input type="range" min="0" max="10" id="speed">
+    <label for="speed">Speed</label>
+    </p>
+
+    <p>
+     <input type="range" min="0" max="100" id="ballSpeed">
+    <label for="ballSpeed">Ball Speed</label>
+    </p>
+
+    <p>
+        <input type="button" id="start" value="Start">
+    </p>
+<canvas id="canvas" width="600" height="300" style="border: solid 1px;"></canvas>
+
+
+
+    <script>
+        var canvasArea = document.getElementById('canvas');
+        var ball = canvasArea.getContext('2d');
+        var time = 0;
+        var oldTimeFrame = 0.;
+        var secondsPassed = 0.;
+        var ballSpeed = document.getElementById('ballSpeed');
+
+        var x0 = 0;
+        var y0 = canvasArea.height;
+        var x = x0;
+        var y = y0;
+        var angle = document.getElementById('angle');
+        var speed = document.getElementById('speed');
+        var gravity = 0.05;
+
+        
+        var run = false;
+        var start = document.getElementById('start');
+
+        start.addEventListener("click", toggle);
+
+        window.onload = launch();
+
+        function toggle()
+        {
+            if(!run)
+            {
+                start.value = "Stop";
+            }
+            else
+            {
+                start.value = "Start";
+                x = x0;
+                y =y0;
+                time = 0;
+            }
+            run = !run;
+        }
+
+
+        /* Starting point */
+        function launch()
+        {
+            window.requestAnimationFrame(canvasFrameLoop);
+        }
+
+        /*moving loop - frames*/
+        function canvasFrameLoop(timeLine)
+        {
+            secondsPassed = (timeLine - oldTimeFrame)/1000.;
+            oldTimeFrame = timeLine;
+            incrementTimeAndMotion();
+            movingBall();
+            window.requestAnimationFrame(canvasFrameLoop);
+        }
+
+        function incrementTimeAndMotion()
+        {
+            if(run)
+            {
+                time += ballSpeed.value*secondsPassed;
+            x = speed.value*Math.cos(-angle.value*Math.PI/180.)*time + x0;
+            y = 0.5*gravity*time*time + speed.value*Math.sin(-angle.value*Math.PI/180.) * time +y0;
+      
+            }
+        }
+
+        /* draw the frame of the ball then clear the canvas*/
+        function movingBall()
+        {
+            ball.clearRect(0,0, canvasArea.width, canvasArea.height);
+            ball.beginPath();
+            ball.fillStyle = "green";
+            ball.rect(0, canvasArea.height, canvasArea.width, -canvasArea.height+200);
+            ball.fill();
+            ball.beginPath();
+            ball.fillStyle = "grey";
+            ball.rect(0, -canvasArea.height+200, canvasArea.width, canvasArea.height);
+            ball.fill();
+            ball.beginPath();
+            ball.fillStyle = "black";
+            ball.arc(x,y,10,0,2*Math.PI);
+            ball.fill();
+            ball.fillStyle = "White";
+            ball.fillText('Angle: '+angle.value,50, 80);
+            ball.fillText('Speed: '+speed.value,50, 90);
+            ball.fillText('Ball Speed: '+ballSpeed.value,50, 100);
+            // ball.beginPath();
+            // ball.moveTo(x0, y0);
+            // ball.strokeStyle = "blue";
+            // ball.lineTo(x0 + 80*Math.cos(angle.value*Math.PI/180.), Y0 - 80*Math.sin(angle.value*Math.PI/180.));
+            // ball.lineWidth = 40;
+            // ball.stroke();
+        }
+    </script>
+
+</body>
+</html>
